@@ -1,2 +1,69 @@
-# wealthwrap-frontend
-WealthWrap is a modular frontend financial management web application designed to help users interact with financial planning features through a clean, responsive, and structured interface. The project follows a scalable architecture with separate modules for authentication, UI handling, storage management, API interaction, and financial simulation. It includes multiple pages such as login, registration, dashboard, profile, and simulator, providing an organized multi-page application experience. The styling system is built using reusable CSS layers, and the JavaScript code is structured into focused modules to ensure maintainability and readability. The project demonstrates best practices in frontend development, including modular design, responsive layout implementation, and clear separation of concerns, making it easy to extend and maintain.
+# Wealthwrap
+WealthWrap is a modular frontend financial management web application designed to provide users with an organized and interactive interface for financial planning and simulation. The project focuses on responsive design, modular architecture, and clean code organization to ensure scalability and maintainability.
+
+Features
+Responsive and user-friendly interface
+Modular JavaScript architecture
+Authentication interface (Login & Register)
+Financial simulator interface
+Dashboard and profile pages
+Organized and scalable folder structure
+Reusable CSS components and layouts
+Client-side storage management
+
+Project Structure
+wealthwrap-frontend/
+│
+├── css/
+│   ├── base.css
+│   ├── components.css
+│   ├── layout.css
+│   └── variables.css
+│
+├── js/
+│   ├── api.js
+│   ├── auth.js
+│   ├── simulator.js
+│   ├── storage.js
+│   └── ui.js
+│
+├── pages/
+│   ├── dashboard.html
+│   ├── login.html
+│   ├── register.html
+│   ├── profile.html
+│   ├── goals.html
+│   ├── leaderboard.html
+│   └── simulator.html
+│
+├── docs/
+│   └── accessibility-checklist.md
+│
+├── tests/
+│   └── smoke.html
+│
+├── index.html
+└── package.json
+
+Tech Stack
+HTML5
+CSS3
+JavaScript (ES6 Modules)
+
+How to Run Locally
+Clone the repository
+git clone https://github.com/yourusername/wealthwrap-frontend.git
+Open the project folder
+cd wealthwrap-frontend
+Open index.html in your browser
+
+Purpose
+This project demonstrates frontend development skills including modular architecture, responsive UI design, structured code organization, and scalable project setup.
+Future Improvements
+Backend integration
+Database connectivity
+User authentication system
+Real-time financial data integration
+
+Author
+Gurjeet Singh
