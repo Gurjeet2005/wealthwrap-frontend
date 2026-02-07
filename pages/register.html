@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - WealthWrap</title>
+    <link rel="stylesheet" href="../css/variables.css">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+
+<body>
+    <main class="container" style="display: flex; justify-content: center; align-items: center; min-height: 90vh;">
+        <div class="card" style="width: 100%; max-width: 500px;">
+            <h1 class="text-center" style="margin-bottom: 0.5rem;">Create Account</h1>
+            <p class="text-center text-muted mb-4">Start your journey to financial freedom.</p>
+
+            <form id="register-form">
+                <div class="form-group">
+                    <label class="form-label" for="name">Full Name</label>
+                    <input type="text" id="name" class="form-input" required placeholder="John Doe">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="email">Email Address</label>
+                    <input type="email" id="email" class="form-input" required placeholder="name@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" class="form-input" required minlength="8"
+                        placeholder="Min 8 chars">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Primary Financial Goal</label>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="goal" value="save"> Save Money
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="goal" value="invest"> Learn Investing
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="goal" value="debt"> Pay Debt
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Get Started</button>
+            </form>
+
+            <p class="text-center mt-4 text-muted" style="font-size: 0.875rem;">
+                Already have an account? <a href="login.html">Sign in</a>
+            </p>
+        </div>
+    </main>
+
+    <script type="module">
+        import { Auth } from '../js/auth.js';
+        import { UI } from '../js/ui.js';
+
+        Auth.redirectIfAuth();
+        UI.mountHeader();
+
+        const form = document.getElementById('register-form');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = form.querySelector('button[type="submit"]');
+            UI.setLoading(btn, true);
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Simple validation check
+            if (password.length < 8) {
+                UI.toast('Password must be at least 8 characters', 'error');
+                UI.setLoading(btn, false);
+                return;
+            }
+
+            const result = await Auth.register(name, email, password);
+
+            if (result.success) {
+                window.location.href = 'dashboard.html';
+            } else {
+                UI.toast(result.message, 'error');
+                UI.setLoading(btn, false);
+            }
+        });
+    </script>
+</body>
+
+</html>

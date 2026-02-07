@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Smoke Test Runner</title>
+</head>
+
+<body style="font-family: sans-serif; padding: 2rem;">
+    <h1>Smoke Tests</h1>
+    <div id="status">Running...</div>
+    <ul id="log"></ul>
+
+    <script type="module">
+        import { API } from '../js/api.js';
+        import { Storage } from '../js/storage.js';
+
+        const log = document.getElementById('log');
+        const status = document.getElementById('status');
+
+        function assert(condition, message) {
+            const li = document.createElement('li');
+            if (condition) {
+                li.style.color = 'green';
+                li.textContent = `PASS: ${message}`;
+            } else {
+                li.style.color = 'red';
+                li.textContent = `FAIL: ${message}`;
+                status.textContent = 'Failed';
+                throw new Error(message);
+            }
+            log.appendChild(li);
+        }
+
+        async function runTests() {
+            try {
+                // 1. Storage Check
+                Storage.set('test_key', 'hello');
+                assert(Storage.get('test_key') === 'hello', 'Storage works');
+
+                // 2. Auth Flow (Mock)
+                const regData = { name: "Test User", email: `test${Date.now()}@test.com`, password: "password123" };
+                const regRes = await API.register(regData);
+                assert(regRes.token, 'Register returns token');
+
+                const loginRes = await API.login(regData.email, regData.password);
+                assert(loginRes.token, 'Login returns token');
+
+                // 3. Goals Logic
+                const newGoal = { userId: loginRes.user.id, title: "Smoke Goal", targetAmount: 100, currentSaved: 0 };
+                const savedGoal = await API.saveGoal(newGoal);
+                assert(savedGoal.id, 'Goal saved with ID');
+
+                const goals = await API.getGoals(loginRes.user.id);
+                assert(goals.length === 1, 'Goal retrievable');
+
+                // 4. Leaderboard
+                const lb = await API.getLeaderboard();
+                assert(lb.length > 0, 'Leaderboard has entries');
+
+                status.textContent = 'All Tests Passed!';
+                status.style.color = 'green';
+            } catch (e) {
+                console.error(e);
+                status.textContent = `Exception: ${e.message}`;
+                status.style.color = 'red';
+            }
+        }
+
+        runTests();
+    </script>
+</body>
+
+</html>

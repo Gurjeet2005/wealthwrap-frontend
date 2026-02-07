@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Simulator - WealthWrap</title>
+    <link rel="stylesheet" href="../css/variables.css">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <main class="main-content">
+            <div class="container">
+                <h1>Budget Simulator</h1>
+                <p class="text-muted mb-4">Simulate your financial future by adjusting your monthly budget.</p>
+
+                <div class="grid grid-cols-2">
+                    <!-- Inputs -->
+                    <div class="card">
+                        <h3>Monthly Budget</h3>
+                        <form id="sim-form">
+                            <div class="form-group">
+                                <label class="form-label">Monthly Income (₹)</label>
+                                <input type="number" id="income" class="form-input" value="50000">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Fixed Expenses (Rent, EMI)</label>
+                                <input type="number" id="fixed" class="form-input" value="20000">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Variable Expenses (Food, Ent.)</label>
+                                <input type="number" id="variable" class="form-input" value="15000">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Goal Target Amount</label>
+                                <input type="number" id="goal" class="form-input" value="200000">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Current Goal Savings</label>
+                                <input type="number" id="saved" class="form-input" value="45000">
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%">Run Simulation</button>
+                        </form>
+                    </div>
+
+                    <!-- Results -->
+                    <div class="card" id="results-card" style="opacity: 0.5;">
+                        <h3>Results</h3>
+                        <div id="results-content" class="hidden">
+                            <div style="margin-bottom: 2rem;">
+                                <div class="text-sm text-muted">Monthly Surplus</div>
+                                <div class="text-2xl font-bold text-success" id="res-surplus">₹0</div>
+                            </div>
+
+                            <div style="margin-bottom: 2rem;">
+                                <div class="text-sm text-muted">Time to Goal</div>
+                                <div class="text-2xl font-bold text-primary" id="res-time">-- months</div>
+                                <div class="text-xs text-muted" id="res-date">Expected: With current values</div>
+                            </div>
+
+                            <div style="margin-top: 2rem;">
+                                <h4>Suggestions</h4>
+                                <ul id="res-suggestions"
+                                    style="list-style: disc; padding-left: 1.5rem; color: var(--muted);">
+                                    <li>Run simulation to see advice.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { Auth } from '../js/auth.js';
+        import { UI } from '../js/ui.js';
+        import { Simulator } from '../js/simulator.js';
+
+        Auth.requireAuth();
+        UI.mountHeader();
+        UI.mountSidebar();
+
+        const form = document.getElementById('sim-form');
+        const resultsCard = document.getElementById('results-card');
+        const resultsContent = document.getElementById('results-content');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const income = parseFloat(document.getElementById('income').value) || 0;
+            const fixed = parseFloat(document.getElementById('fixed').value) || 0;
+            const variable = parseFloat(document.getElementById('variable').value) || 0;
+            const goal = parseFloat(document.getElementById('goal').value) || 0;
+            const saved = parseFloat(document.getElementById('saved').value) || 0;
+
+            const result = Simulator.calculate(income, fixed, variable, goal, saved);
+
+            // Render
+            resultsCard.style.opacity = '1';
+            resultsContent.classList.remove('hidden');
+
+            document.getElementById('res-surplus').textContent = UI.formatCurrency(result.surplus);
+            document.getElementById('res-surplus').className = result.surplus >= 0 ? 'text-2xl font-bold text-success' : 'text-2xl font-bold text-error';
+
+            if (result.monthsToGoal === Infinity) {
+                document.getElementById('res-time').textContent = "Never";
+                document.getElementById('res-date').textContent = "Surplus is negative or zero";
+            } else {
+                document.getElementById('res-time').textContent = `${result.monthsToGoal} months`;
+                const d = new Date();
+                d.setMonth(d.getMonth() + result.monthsToGoal);
+                document.getElementById('res-date').textContent = `Expected: ${d.toLocaleDateString()}`;
+            }
+
+            const sugList = document.getElementById('res-suggestions');
+            sugList.innerHTML = '';
+            if (result.suggestions.length) {
+                result.suggestions.forEach(s => {
+                    const li = document.createElement('li');
+                    li.textContent = s.text;
+                    sugList.appendChild(li);
+                });
+            } else {
+                sugList.innerHTML = '<li>You are on track! Great job.</li>';
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "wealthwrap-frontend",
+  "version": "1.0.0",
+  "description": "Gamified personal finance prototype",
+  "scripts": {
+    "start": "npx http-server . -c-1 -o"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

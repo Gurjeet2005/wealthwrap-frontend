@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Education - WealthWrap</title>
+    <link rel="stylesheet" href="../css/variables.css">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <main class="main-content">
+            <div class="container">
+                <h1>Education Center</h1>
+                <p class="mb-4 text-muted">Learn the basics of personal finance and earn badges.</p>
+
+                <div class="grid grid-cols-2">
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1rem;">
+                            <span class="badge badge-success">Beginner</span>
+                            <span class="text-muted text-sm">3 min read</span>
+                        </div>
+                        <h3>Why Budgeting Matters</h3>
+                        <p class="text-muted mb-4">Understanding where your money goes is the first step to wealth.</p>
+                        <button class="btn btn-outline" onclick="alert('Article content would open here.')">Read
+                            Article</button>
+                    </div>
+
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1rem;">
+                            <span class="badge badge-warning">Intermediate</span>
+                            <span class="text-muted text-sm">5 min read</span>
+                        </div>
+                        <h3>Compound Interest 101</h3>
+                        <p class="text-muted mb-4">Einstein called it the eighth wonder of the world.</p>
+                        <button class="btn btn-primary" id="start-quiz">Take Quiz</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Quiz Modal -->
+    <div id="quiz-modal" class="hidden"
+        style="position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 1000; display:flex; align-items:center; justify-content:center;">
+        <div class="card" style="width: 100%; max-width: 500px;">
+            <div style="text-align: right;"><button id="close-quiz"
+                    style="border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button></div>
+            <h3 class="mb-4">Quiz: Compound Interest</h3>
+            <p class="mb-4">Q: If you save ₹100 at 10% interest, how much do you have after 2 years?</p>
+
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <button class="btn btn-outline quiz-opt" data-correct="false">₹120</button>
+                <button class="btn btn-outline quiz-opt" data-correct="true">₹121</button>
+                <button class="btn btn-outline quiz-opt" data-correct="false">₹110</button>
+            </div>
+            <div id="quiz-result" class="mt-4 hidden p-2 text-center" style="font-weight: bold;"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { Auth } from '../js/auth.js';
+        import { UI } from '../js/ui.js';
+
+        Auth.requireAuth();
+        UI.mountHeader();
+        UI.mountSidebar();
+
+        const modal = document.getElementById('quiz-modal');
+        const result = document.getElementById('quiz-result');
+
+        document.getElementById('start-quiz').addEventListener('click', () => {
+            modal.classList.remove('hidden');
+            result.classList.add('hidden');
+            document.querySelectorAll('.quiz-opt').forEach(b => {
+                b.style.background = 'transparent';
+                b.style.color = 'var(--primary)';
+                b.disabled = false;
+            });
+        });
+
+        document.getElementById('close-quiz').addEventListener('click', () => modal.classList.add('hidden'));
+
+        document.querySelectorAll('.quiz-opt').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const isCorrect = e.target.dataset.correct === 'true';
+                if (isCorrect) {
+                    e.target.style.background = '#C6F6D5';
+                    e.target.style.color = '#22543D';
+                    result.textContent = "Correct! +50 Points";
+                    result.style.color = 'var(--success)';
+                } else {
+                    e.target.style.background = '#FED7D7';
+                    e.target.style.color = '#742A2A';
+                    result.textContent = "Incorrect. It compounds! (100 -> 110 -> 121)";
+                    result.style.color = 'var(--error)';
+                }
+                result.classList.remove('hidden');
+                document.querySelectorAll('.quiz-opt').forEach(b => b.disabled = true);
+            });
+        });
+
+    </script>
+</body>
+
+</html>

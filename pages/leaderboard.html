@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - WealthWrap</title>
+    <link rel="stylesheet" href="../css/variables.css">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <style>
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .leaderboard-table th,
+        .leaderboard-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .rank-1 {
+            color: #D69E2E;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .rank-2 {
+            color: #718096;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .rank-3 {
+            color: #B7791F;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-layout">
+        <main class="main-content">
+            <div class="container" style="max-width: 800px;">
+                <div class="card">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h1>Leaderboard</h1>
+                        <div style="background: #EDF2F7; padding: 4px; border-radius: var(--radius-md);">
+                            <button id="view-global" class="btn btn-sm btn-primary">Global</button>
+                            <button id="view-friends" class="btn btn-sm btn-text">Friends</button>
+                        </div>
+                    </div>
+
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr class="text-muted text-sm">
+                                <th width="60">Rank</th>
+                                <th>User</th>
+                                <th class="text-right">Points</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lb-body">
+                            <!-- JS Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { Auth } from '../js/auth.js';
+        import { UI } from '../js/ui.js';
+        import { API } from '../js/api.js';
+
+        Auth.requireAuth();
+        UI.mountHeader();
+        UI.mountSidebar();
+
+        const user = Auth.currentUser();
+        const tbody = document.getElementById('lb-body');
+        let currentView = 'global';
+
+        async function loadLeaderboard() {
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center p-4">Loading...</td></tr>';
+            const data = await API.getLeaderboard(currentView, user.id);
+            tbody.innerHTML = '';
+
+            data.forEach((u, index) => {
+                const rank = index + 1;
+                const isMe = u.id === user.id;
+                const row = document.createElement('tr');
+                if (isMe) row.style.background = '#EBF8FF';
+
+                let rankClass = '';
+                if (rank === 1) rankClass = 'rank-1';
+                else if (rank === 2) rankClass = 'rank-2';
+                else if (rank === 3) rankClass = 'rank-3';
+
+                row.innerHTML = `
+                    <td class="${rankClass}">#${rank}</td>
+                    <td>
+                        <div style="display:flex; align-items:center; gap: 10px;">
+                            <img src="../${u.avatar}" style="width: 32px; height: 32px; border-radius: 50%; background: #eee;">
+                            <span style="${isMe ? 'font-weight: bold' : ''}">${u.name} ${isMe ? '(You)' : ''}</span>
+                        </div>
+                    </td>
+                    <td class="text-right font-bold text-primary">${u.points}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Toggles
+        document.getElementById('view-global').addEventListener('click', (e) => {
+            currentView = 'global';
+            e.target.className = 'btn btn-sm btn-primary';
+            document.getElementById('view-friends').className = 'btn btn-sm btn-text';
+            loadLeaderboard();
+        });
+        document.getElementById('view-friends').addEventListener('click', (e) => {
+            currentView = 'friends';
+            e.target.className = 'btn btn-sm btn-primary';
+            document.getElementById('view-global').className = 'btn btn-sm btn-text';
+            loadLeaderboard();
+        });
+
+        loadLeaderboard();
+    </script>
+</body>
+
+</html>

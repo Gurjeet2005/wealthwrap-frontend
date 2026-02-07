@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - WealthWrap</title>
+    <link rel="stylesheet" href="../css/variables.css">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <main class="main-content">
+            <div class="container" style="max-width: 600px;">
+                <h1>My Profile</h1>
+
+                <div class="card mb-4">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                        <img id="p-avatar" src=""
+                            style="width: 80px; height: 80px; border-radius: 50%; border: 4px solid #E2E8F0;">
+                        <div>
+                            <h2 id="p-name" style="margin: 0;">Name</h2>
+                            <p id="p-email" class="text-muted">email@example.com</p>
+                            <span class="badge badge-info" id="p-joined">Member</span>
+                        </div>
+                    </div>
+
+                    <form id="profile-form">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" id="edit-name" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" checked> Receive email notifications
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox"> Enable Default 2FA (Demo)
+                            </label>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="alert('Profile updated (mock)!')">Save
+                            Changes</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3>Data Management</h3>
+                    <p class="text-muted text-sm mb-4">Download a copy of your personal data.</p>
+                    <button class="btn btn-outline" id="export-btn">Export Data (JSON)</button>
+                    <button class="btn btn-outline" style="color:red; border-color:red; margin-left:1rem;"
+                        onclick="localStorage.clear(); window.location.reload();">Reset All Data</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { Auth } from '../js/auth.js';
+        import { UI } from '../js/ui.js';
+        import { API } from '../js/api.js';
+
+        Auth.requireAuth();
+        UI.mountHeader();
+        UI.mountSidebar();
+
+        const user = Auth.currentUser();
+
+        document.getElementById('p-name').textContent = user.name;
+        document.getElementById('edit-name').value = user.name;
+        document.getElementById('p-email').textContent = user.email;
+        document.getElementById('p-avatar').src = '../' + (user.avatar || 'assets/icons/avatar-1.svg');
+
+        document.getElementById('export-btn').addEventListener('click', () => {
+            const data = {
+                user: user,
+                timestamp: new Date().toISOString()
+            };
+            const str = JSON.stringify(data, null, 2);
+            const blob = new Blob([str], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `wealthwrap-data-${user.id}.json`;
+            a.click();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WealthWrap - Gamified Personal Finance</title>
+    <meta name="description" content="Turn finance into a game — learn and build your wealth with WealthWrap.">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .hero {
+            text-align: center;
+            padding: 5rem 1rem;
+            background: linear-gradient(135deg, #2B6CB0 0%, #2c5282 100%);
+            color: white;
+            border-radius: 0 0 50% 50% / 4%;
+            margin-bottom: 4rem;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+        }
+        .hero p {
+            font-size: 1.25rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+        }
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header injected by ui.js -->
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Turn finance into a game</h1>
+                <p>Master your money with quests, challenges, and simulators. Learn, save, and build your wealth.</p>
+                <div class="hero-actions">
+                    <a href="pages/register.html" class="btn btn-accent btn-lg">Get Started — It’s Free</a>
+                    <a href="#features" class="btn btn-outline" style="color: white; border-color: white; margin-left: 1rem;">Explore Features</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="container" style="margin-bottom: 4rem;">
+            <h2 class="text-center" style="margin-bottom: 3rem;">Why WealthWrap?</h2>
+            <div class="grid grid-cols-3">
+                <div class="card text-center">
+                    <span class="feature-icon">🎯</span>
+                    <h3>Goal Setting</h3>
+                    <p class="text-muted">Set ambitious financial goals and track your progress with visual forecasting.</p>
+                </div>
+                <div class="card text-center">
+                    <span class="feature-icon">🔮</span>
+                    <h3>Budget Simulator</h3>
+                    <p class="text-muted">Test different spending scenarios to see how they impact your future wealth.</p>
+                </div>
+                <div class="card text-center">
+                    <span class="feature-icon">⚔️</span>
+                    <h3>Quests & Rewards</h3>
+                    <p class="text-muted">Complete daily finance challenges to earn points, badges, and climb the leaderboard.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer style="background: var(--text-main); color: white; padding: 3rem 0; text-align: center;">
+            <div class="container">
+                <p>&copy; 2026 WealthWrap. All rights reserved.</p>
+                <div style="margin-top: 1rem;">
+                    <a href="#" style="color: var(--muted); margin: 0 10px;">Privacy</a>
+                    <a href="#" style="color: var(--muted); margin: 0 10px;">Terms</a>
+                    <a href="#" style="color: var(--muted); margin: 0 10px;">Contact</a>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <script type="module">
+        import { UI } from './js/ui.js';
+        
+        // Adjust paths for root index.html
+        // The mock implementation of mountHeader uses '../' prefixes, 
+        // we might need to handle root vs subpage paths.
+        // Quick fix: Override mountHeader logic slightly or detect path in UI.js?
+        // Let's implement path detection in UI.js to be robust. 
+        // For now, I'll let UI.js run and if links break I will fix.
+        // Actually best to fix UI.js to detect 'pages/' in URL.
+        
+        document.addEventListener('DOMContentLoaded', () => {
+             // For the root landing page, we need to hack the pathing or rely on robust UI.js. 
+             // Let's rely on standard anchor functionality 
+             // but user menu might need adjustment if logic assumes 'pages/'.
+             
+             // Quick hack for demo: Just update the links dynamically?
+             // Or update UI.js to be smarter. 
+             // Let's update UI.js (next step if needed) but typically 'pages/login.html' works from root,
+             // and '../pages/login.html' works from sibling pages.
+             
+             // The UI.js has hardcoded '../'. I will patch UI.js in next turn 
+             // or I can overwrite it locally here for just the landing page if I wanted.
+             // But let's stick to the plan.
+             
+             UI.mountHeader();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quests - WealthWrap</title>
+    <link rel="stylesheet" href="../css/variables.css">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <main class="main-content">
+            <div class="container">
+                <div class="mb-4">
+                    <h1>Daily Quests</h1>
+                    <p class="text-muted">Complete tasks to earn points and unlock badges.</p>
+                </div>
+
+                <div id="quests-list" class="grid grid-cols-1" style="max-width: 800px;">
+                    <!-- Filled by JS -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { Auth } from '../js/auth.js';
+        import { UI } from '../js/ui.js';
+        import { API } from '../js/api.js';
+
+        Auth.requireAuth();
+        UI.mountHeader();
+        UI.mountSidebar();
+
+        const user = Auth.currentUser();
+        const container = document.getElementById('quests-list');
+
+        async function loadQuests() {
+            container.innerHTML = '<p class="text-muted">Loading quests...</p>';
+            const quests = await API.getQuests(user.id);
+            container.innerHTML = '';
+
+            quests.forEach(quest => {
+                const el = UI.createElement('div', ['card']);
+                el.style.display = 'flex';
+                el.style.alignItems = 'center';
+                el.style.gap = '1rem';
+
+                const btnState = quest.isCompleted
+                    ? `<button class="btn btn-outline" disabled style="border-color: var(--success); color: var(--success);">✔ Completed</button>`
+                    : `<button class="btn btn-primary action-btn" data-id="${quest.id}">Claim ${quest.reward} pts</button>`;
+
+                el.innerHTML = `
+                    <div style="font-size: 2rem; background: #EBF8FF; width: 60px; height: 60px; display:flex; align-items:center; justify-content:center; border-radius:50%;">
+                        📜
+                    </div>
+                    <div style="flex: 1;">
+                        <h3 style="margin-bottom: 0.25rem;">${quest.text}</h3>
+                        <div class="text-muted text-sm">Time: ${quest.time} • Reward: <span class="text-accent font-bold">${quest.reward} pts</span></div>
+                    </div>
+                    <div>
+                        ${btnState}
+                    </div>
+                `;
+                container.appendChild(el);
+            });
+
+            // Bind events
+            container.querySelectorAll('.action-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const qId = btn.dataset.id;
+                    UI.setLoading(btn, true, 'Claiming...');
+
+                    const res = await API.completeQuest(qId, user.id);
+                    if (res.success) {
+                        UI.toast(`Quest completed! Earned ${res.pointsAwarded} points.`);
+                        // Update local user points for UI
+                        user.points += res.pointsAwarded;
+                        localStorage.setItem('auth_user', JSON.stringify(user));
+                        // Reload to show state
+                        loadQuests();
+                        // Update header points immediately
+                        document.querySelector('.points-badge').textContent = `💎 ${user.points}`;
+                    } else {
+                        UI.toast('Could not complete quest.', 'error');
+                        UI.setLoading(btn, false);
+                    }
+                });
+            });
+        }
+
+        loadQuests();
+    </script>
+</body>
+
+</html>
